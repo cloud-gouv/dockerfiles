@@ -1,0 +1,26 @@
+networks:
+  default:
+    # connect to kind network
+    name: kind
+    external: true
+services:
+  k8s_tools:
+    platform: linux/amd64
+    image: ${DOCKER_REGISTRY:-}k8s-tools:${DOCKER_K8S_CLI_VERSION:-latest}
+    #extra_hosts:
+      #- "host.docker.internal:host-gateway"
+      #- "localhost:host-gateway"
+    build:
+      context: .
+      args:
+        http_proxy: ${http_proxy:-}
+        https_proxy: ${http_proxy:-}
+        no_proxy: ${no_proxy:-}
+    volumes:
+      - .:/data
+      # mount KUBECONFIG
+      - $HOME/.kube:/root/.kube
+    environment:
+      http_proxy: ${http_proxy}
+      https_proxy: ${http_proxy}
+      no_proxy: ${no_proxy}
