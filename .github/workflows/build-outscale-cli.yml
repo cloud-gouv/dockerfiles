@@ -1,0 +1,62 @@
+name: Docker build and publish outscale-cli
+
+on:
+  push:
+    paths:
+      - 'outscale-cli/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+  schedule:
+  # every day
+  #  - cron: '0 1 * * *'
+  # weekly
+    - cron: '0 0 * * 0'
+
+env:
+  REGISTRY: ghcr.io
+  REGISTRY_BASE_PATH: ghcr.io/${{ github.repository }}
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner}}/outscale-cli
+
+jobs:
+  build:
+    name: Build and publish docker images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Calculate docker image tag
+        id: set-tag
+        run: |
+          git fetch -t
+          tag=$( git describe --tags --always)
+          echo "$tag"
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: outscale-cli
+          tags: "${{ env.IMAGE_NAME }}:${{ steps.set-tag.outputs.tag }}, ${{ env.IMAGE_NAME }}:latest"
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64
+          push: true
