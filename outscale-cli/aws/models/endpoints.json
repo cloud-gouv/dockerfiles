@@ -1,0 +1,128 @@
+{
+  "partitions": [
+    {
+      "defaults": {
+        "hostname": "{service}.{region}.{dnsSuffix}",
+        "protocols": [
+          "https"
+        ],
+        "signatureVersions": [
+          "v4"
+        ]
+      },
+      "dnsSuffix": "outscale.com",
+      "partition": "osc",
+      "partitionName": "Outscale",
+      "regionRegex": "^(cloudgouv|us|eu|ap)\\-\\w+\\-\\d+$",
+      "regions": {
+        "eu-west-2": {
+          "description": "EU (Paris)"
+        },
+        "cloudgouv-eu-west-1": {
+          "description": "CloudGouv EU (Paris)"
+        },
+        "us-east-2": {
+          "description": "US East (NY)"
+        },
+        "us-west-1": {
+          "description": "US West (California)"
+        },
+        "ap-northeast-1": {
+          "description": "Japan (Tokyo)"
+        }
+      },
+      "services": {
+        "ec2": {
+          "endpoints": {
+            "eu-west-2": {
+              "hostname": "fcu.eu-west-2.outscale.com"
+            },
+            "cloudgouv-eu-west-1": {
+              "hostname": "fcu.cloudgouv-eu-west-1.outscale.com"
+            },
+            "us-east-2": {
+              "hostname": "fcu.us-east-2.outscale.com"
+            },
+            "us-west-1": {
+              "hostname": "fcu.us-west-1.outscale.com"
+            },
+            "ap-northeast-1": {
+              "hostname": "fcu.ap-northeast-1.outscale.com"
+            }
+          }
+        },
+        "elasticloadbalancing": {
+          "endpoints": {
+            "eu-west-2": {
+              "hostname": "lbu.eu-west-2.outscale.com"
+            },
+            "cloudgouv-eu-west-1": {
+              "hostname": "lbu.cloudgouv-eu-west-1.outscale.com"
+            },
+            "us-east-2": {
+              "hostname": "lbu.us-east-2.outscale.com"
+            },
+            "us-west-1": {
+              "hostname": "lbu.us-west-1.outscale.com"
+            },
+            "ap-northeast-1": {
+              "hostname": "lbu.ap-northeast-1.outscale.com"
+            }
+          }
+        },
+        "iam": {
+          "endpoints": {
+            "eu-west-2": {
+              "hostname": "eim.eu-west-2.outscale.com"
+            },
+            "cloudgouv-eu-west-1": {
+              "hostname": "eim.cloudgouv-eu-west-1.outscale.com"
+            },
+            "us-east-2": {
+              "hostname": "eim.us-east-2.outscale.com"
+            },
+            "us-west-1": {
+              "hostname": "eim.us-west-1.outscale.com"
+            },
+            "ap-northeast-1": {
+              "hostname": "eim.ap-northeast-1.outscale.com"
+            }
+          }
+        },
+        "directconnect": {
+          "endpoints": {
+            "eu-west-2": {
+              "hostname": "directlink.eu-west-2.outscale.com"
+            },
+            "cloudgouv-eu-west-1": {
+              "hostname": "directlink.cloudgouv-eu-west-1.outscale.com"
+            },
+            "us-east-2": {
+              "hostname": "directlink.us-east-2.outscale.com"
+            },
+            "us-west-1": {
+              "hostname": "directlink.us-west-1.outscale.com"
+            }
+          }
+        },
+        "s3": {
+          "endpoints": {
+            "eu-west-2": {
+              "hostname": "oos.eu-west-2.outscale.com"
+            },
+            "cloudgouv-eu-west-1": {
+              "hostname": "oos.cloudgouv-eu-west-1.outscale.com"
+            },
+            "us-east-2": {
+              "hostname": "oos.us-east-2.outscale.com"
+            },
+            "us-west-1": {
+              "hostname": "oos.us-west-1.outscale.com"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "version": 3
+}

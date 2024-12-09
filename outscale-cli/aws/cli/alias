@@ -1,0 +1,56 @@
+[toplevel]
+# List all your instances running
+#     --filter Name=instance-state-name,Values=running \
+#
+ls-vm=ec2 describe-instances \
+     --query 'Reservations[].Instances[].{ID: InstanceId, VPC: VpcId, "Private IP": PrivateIpAddress, "Public IP": PublicIpAddress, Key: KeyName, Name: Tags[?Key==`Name`] | [0].Value ,"Security Group": SecurityGroups[0].GroupId, Type: InstanceType, Image: ImageId, Volumes: BlockDeviceMappings[0].Ebs.VolumeId, State: State.Name}' \
+     --output table --no-cli-pager --no-paginate
+
+ls-subnet=ec2 describe-subnets \
+     --query 'Subnets[].{SubnetId: SubnetId, CidrBlock: CidrBlock, VpcId: VpcId, AvailableIpAddressCount: AvailableIpAddressCount, AvailabilityZone: AvailabilityZone, MapPublicIpOnLaunch: MapPublicIpOnLaunch, Name: Tags[?Key==`Name`].Value|[0], Env: Tags[?Key==`Env`].Value|[0] }' \
+     --output table
+
+
+# vm console
+vm-console = !f() { aws ec2 get-console-output --instance-id "$1" --output text --no-cli-pager ; }; f
+
+# public ip
+ls-eip = ec2 describe-addresses --output table
+
+ls-keypair = ec2 describe-key-pairs --output table
+
+# List all images
+ls-images=ec2 describe-images \
+     --query 'Images[].{ImageId: ImageId,Name: Name, Public: Public, Description: Description, Architecture: Architecture}' \
+     --output table
+
+# List all your volumes
+ls-volumes=ec2 describe-volumes \
+     --query 'Volumes[].{VolumeId: VolumeId,State: State,Size: Size,Name: Tags[0].Value,AZ: AvailabilityZone}' \
+     --output table
+# List all your snapshots
+ls-snapshots=ec2 describe-snapshots \
+     --query 'Snapshots[].{SnapshotId: SnapshotId,Description: Description, VolumeId: VolumeId,Size: VolumeSize,Name: Tags[0].Value}' \
+     --output table
+# List all security groups port ranges open to 0.0.0.0/0
+ls-open-ports=ec2 describe-security-groups \
+   --filters Name=ip-permission.cidr,Values=0.0.0.0/0 \
+   --query 'SecurityGroups[].{
+     GroupName:GroupName,
+     GroupId:GroupId,
+     PortRanges:
+       IpPermissions[?contains(IpRanges[].CidrIp, `0.0.0.0/0`)].[
+         join(`:`, [IpProtocol, join(`-`, [to_string(FromPort), to_string(ToPort)])])
+       ][]
+   }' \
+   --output text
+
+ls-sgs = ec2 describe-security-groups --query "SecurityGroups[].{GroupID: GroupId, GroupName: GroupName, Description: Description}" --output table
+
+sg-rules = !f() { aws ec2 describe-security-groups \
+    --query "SecurityGroups[].{
+        InBound: IpPermissions[].{From: FromPort,To: ToPort,IpProtocol: IpProtocol, Ranges: join(',',IpRanges[].CidrIp)},
+        OutBound: IpPermissionsEgress[].{From: FromPort,To: ToPort,IpProtocol: IpProtocol, Ranges: join(',',IpRanges[].CidrIp)}
+        }
+    " \
+    --group-id "$1" --output table; }; f

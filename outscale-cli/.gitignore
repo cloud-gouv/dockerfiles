@@ -1,0 +1,6 @@
+.env
+**.env
+osc/config.json
+aws/credentials
+credentials
+tmp

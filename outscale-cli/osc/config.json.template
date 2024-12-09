@@ -1,0 +1,7 @@
+{
+    "default": {
+        "host": "outscale.com",
+        "https": true,
+        "method": "POST"
+    }
+}

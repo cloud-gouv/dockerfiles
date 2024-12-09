@@ -1,0 +1,36 @@
+version: "3.5"
+services:
+  cli:
+    platform: linux/amd64
+    image: ${DOCKER_REGISTRY}outscale-cli:${DOCKER_OUTSCALE_CLI_VERSION:-latest}
+    build:
+      context: .
+      args:
+        http_proxy: ${http_proxy:-}
+        https_proxy: ${http_proxy:-}
+        no_proxy: ${no_proxy:-}
+        PYPI_URL: ${PYPI_URL:-}
+        PYPI_HOST: ${PYPI_HOST:-}
+        ANSIBLE_VERSION: "${ANSIBLE_VERSION:-2.10.*}"
+        AWS_CLI_VERSION: ${AWS_CLI_VERSION:-}
+        S3CMD_VERSION: ${S3CMD_VERSION:-}
+        OSC_CLI_VERSION: ${OSC_CLI_VERSION:-}
+        TERRAFORM_VERSION: "${TERRAFORM_VERSION:-1.5.7*}"
+    environment:
+      http_proxy: ${http_proxy}
+      https_proxy: ${http_proxy}
+      no_proxy: ${no_proxy}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      OSC_ACCESS_KEY: ${AWS_ACCESS_KEY_ID}
+      OSC_SECRET_KEY: ${AWS_SECRET_ACCESS_KEY}
+      OSC_REGION: ${AWS_DEFAULT_REGION}
+      OUTSCALE_ACCESSKEYID: ${AWS_ACCESS_KEY_ID}
+      OUTSCALE_SECRETKEYID: ${AWS_SECRET_ACCESS_KEY}
+      OUTSCALE_REGION: ${AWS_DEFAULT_REGION}
+
+    volumes:
+      - .:/data
+      - ./aws:/root/.aws
+      # - ./osc:/root/.osc
