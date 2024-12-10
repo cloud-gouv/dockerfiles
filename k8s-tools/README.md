@@ -30,12 +30,12 @@ Prereq:
 ```
 #
 # create a kind cluster named "mgmt"
-
+kind create cluster --name mgmt
 # get kind-mgmt ctrl plane private ip
 KUBE_CTRLPLANE_IP=$(docker inspect  -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mgmt-control-plane)
 
 # replace it in KUBECONFIG
-kubectl config set clusters.kind-mgmt.server https://${KUBE_CTRLPLANE_IP}:6443
+kubectl config set clusters.kind-mgmt.server "https://${KUBE_CTRLPLANE_IP}:6443"
 
 # start k8s_tools container in shell mode
 export DOCKER_REGISTRY=ghcr.io/cloud-gouv/
