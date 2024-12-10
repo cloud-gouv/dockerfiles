@@ -24,9 +24,14 @@ RUN export DEBIAN_FRONTEND="noninteractive" \
    ; apt-get -qqy update \
    && apt-get install -qqy ${DEBIAN_PACKAGES} \
    && ln -sf /bin/true /usr/local/bin/docker \
-   && /build/install_tools.sh \
+   && echo "export HELM_DATA_HOME=/usr/local/share/helm" > /etc/profile.d/helm.sh \
+   ; chmod +x /etc/profile.d/helm.sh \
+   ; . /etc/profile.d/helm.sh \
+   ; /build/install_tools.sh \
    && kubectl version --client=true \
    && rm -rf /var/lib/apt/lists/* \
    && apt-get -q clean
 
 WORKDIR /data
+
+ENTRYPOINT ["/bin/bash", "-l", "-c"]
