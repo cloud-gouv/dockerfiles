@@ -1,7 +1,7 @@
 #
 # Base image
 #
-FROM --platform=linux/amd64 debian:bullseye
+FROM --platform=linux/amd64 debian:bookworm
 
 ARG http_proxy=${http_proxy:-}
 ARG https_proxy=${https_proxy:-}
@@ -10,7 +10,13 @@ ARG PYPI_URL=${PYPI_URL:-}
 ARG PYPI_HOST=${PYPI_HOST:-}
 
 #ARG ANSIBLE_VERSION=${ANSIBLE_VERSION:-2.9.*}
-ARG ANSIBLE_VERSION=${ANSIBLE_VERSION:-2.10.*}
+ARG ANSIBLE_VERSION=${ANSIBLE_VERSION:-10.7*}
+# install ansible version
+# https://docs.ansible.com/ansible/latest/installation_guide/installation_distros.html#installing-ansible-on-debian
+#  Debian 12 (Bookworm) -> Ubuntu 22.04 (Jammy) jammy
+#  Debian 11 (Bullseye) -> Ubuntu 20.04 (Focal) focal
+ARG ANSIBLE_CODENAME=jammy
+
 ARG AWS_CLI_VERSION
 ARG OSC_CLI_VERSION
 ARG S3CMD_VERSION
@@ -42,7 +48,7 @@ RUN . /etc/os-release \
 # https://docs.ansible.com/ansible/latest/installation_guide/installation_distros.html#installing-ansible-on-debian
 #  Debian 12 (Bookworm) -> Ubuntu 22.04 (Jammy) jammy
 #  Debian 11 (Bullseye) -> Ubuntu 20.04 (Focal) focal
-RUN export UBUNTU_CODENAME=focal \
+RUN export UBUNTU_CODENAME=$ANSIBLE_CODENAME \
     ; wget -O- "https://keyserver.ubuntu.com/pks/lookup?fingerprint=on&op=get&search=0x6125E2A8C77F2818FB7BD15B93C4A3FD7BB9C367" \
     | sudo gpg --dearmour -o /usr/share/keyrings/ansible-archive-keyring.gpg \
     && echo "deb [signed-by=/usr/share/keyrings/ansible-archive-keyring.gpg] http://ppa.launchpad.net/ansible/ansible/ubuntu $UBUNTU_CODENAME main" \
@@ -84,7 +90,8 @@ RUN  pip_args="" ; [ -z "$PYPI_URL" ] || pip_args=" --index-url $PYPI_URL " \
     ; [ -z "$PYPI_HOST" ] || pip_args="$pip_args --trusted-host $PYPI_HOST " \
     ; echo "$no_proxy" |tr ',' '\n' | sort -u |grep "^$PYPI_HOST$" \
     || [ -z "$http_proxy" ] || pip_args="$pip_args --proxy $http_proxy " \
-    ; pip3 install "s3cmd${S3CMD_VERSION:+==$S3CMD_VERSION}" \
+    ; pip3 install --break-system-packages \
+        "s3cmd${S3CMD_VERSION:+==$S3CMD_VERSION}" \
         "osc-sdk${OSC_CLI_VERSION:+==$OSC_CLI_VERSION}" \
         osc-sdk-python \
         boto \
