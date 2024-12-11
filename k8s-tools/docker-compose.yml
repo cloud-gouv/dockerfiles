@@ -6,7 +6,7 @@ networks:
 services:
   k8s_tools:
     platform: linux/amd64
-    image: ${DOCKER_REGISTRY:-}k8s-tools:${DOCKER_K8S_CLI_VERSION:-latest}
+    image: ${DOCKER_REGISTRY:-ghcr.io/cloud-gouv/}k8s-tools:${DOCKER_K8S_CLI_VERSION:-latest}
     #extra_hosts:
       #- "host.docker.internal:host-gateway"
       #- "localhost:host-gateway"
