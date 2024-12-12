@@ -27,7 +27,7 @@ ARG TERRAFORM_VERSION=${TERRAFORM_VERSION:-1.5.7*}
 
 # define packages
 ARG DEBIAN_PACKAGES="tzdata keyboard-configuration \
-      curl unzip groff less wget vim jq sudo \
+      curl unzip groff less wget vim jq sudo gettext-base \
       gnupg software-properties-common \
       git python3 python3-dnspython python3-redis python3-netaddr python3-jmespath \
       python3-cryptography \
