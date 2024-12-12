@@ -5,10 +5,13 @@
 ## avoir le  fichier age-secret stocké en local .config/age/secret-age.txt
 ## SOPS_AGE_RECIPIENTS dans les variables  d'environnement
 
-git clone --filter=blob:none --sparse git@github.com:cloud-gouv/k8s-cluster-api-infra.git
+# extract only  the  deploy  directory  uncomment  the following line
+#git clone --filter=blob:none --sparse git@github.com:cloud-gouv/k8s-cluster-api-infra.git
+git clone git@github.com:cloud-gouv/k8s-cluster-api-infra.git
 cd k8s-cluster-api-infra
-git sparse-checkout init --cone
-git sparse-checkout set deploy
+# extract only  the  deploy  directory  uncomment  the following lines
+#git sparse-checkout init --cone
+#git sparse-checkout set deploy
 cp $HOME/.config/age/secret-age.txt deploy/ci-keys.txt
 docker-compose build 		  
 kind create cluster --name mgmt
