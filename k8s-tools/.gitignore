@@ -1,3 +1,4 @@
 .env
 **.env
 tmp
+**ci-keys.txt
