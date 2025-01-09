@@ -1,0 +1,72 @@
+#
+# generate Docker images for cluster-api-provider-outscale for development and testing purposes
+#
+name: Docker build and publish cluster-api-provider-outscale
+
+on:
+  push:
+    paths:
+      - '.github/workflows/build-cluster-api-provider-outscale*'
+  workflow_dispatch:
+    commitref:
+      description: 'branch, tag or SHA to checkout'
+      default: 'main'
+      required: true
+      type: string
+  schedule:
+  # weekly
+    - cron: '0 0 * * 0'
+env:
+  REGISTRY: ghcr.io
+  REGISTRY_BASE_PATH: ghcr.io/${{ github.repository_owner }}
+
+jobs:
+  build:
+    name: Build and publish images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout outscale/cluster-api-provider-outscale code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          repository: 'outscale/cluster-api-provider-outscale'
+          ## change default tag
+          ref: ${{ inputs.commitref }}
+          path: 'capi-outscale'
+
+      - name: Calculate docker image tag
+        id: set-tag
+        run: |
+          ( cd capi-outscale
+          git fetch -t
+          tag=$(git describe --tags --always)
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+          )
+      - name: Docker build
+        run: |
+          ( cd capi-outscale
+             bash -c "make docker-build"
+          )
+        env:
+          VERSION: ${{ steps.set-tag.outputs.tag }}
+          TAG: ${{ steps.set-tag.outputs.tag }}
+          REGISTRY: ${{ env.REGISTRY_BASE_PATH }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker push
+        run: |
+          ( cd capi-outscale
+             bash -c "make docker-push"
+          )
+        env:
+          VERSION: ${{ steps.set-tag.outputs.tag }}
+          TAG: ${{ steps.set-tag.outputs.tag }}
+          REGISTRY: ${{ env.REGISTRY_BASE_PATH }}
