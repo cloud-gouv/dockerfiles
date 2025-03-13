@@ -1,0 +1,24 @@
+networks:
+  default:
+    # connect to kind network
+    name: kind
+    external: true
+services:
+  backup_tools:
+    platform: linux/amd64
+    image: ${DOCKER_REGISTRY:-ghcr.io/cloud-gouv/}backup-tools:${DOCKER_BACKUP_TOOLS_VERSION:-latest}
+    #extra_hosts:
+      #- "host.docker.internal:host-gateway"
+      #- "localhost:host-gateway"
+    build:
+      context: .
+      args:
+        http_proxy: ${http_proxy:-}
+        https_proxy: ${http_proxy:-}
+        no_proxy: ${no_proxy:-}
+#    volumes:
+#      - .:/data
+    environment:
+      http_proxy: ${http_proxy}
+      https_proxy: ${http_proxy}
+      no_proxy: ${no_proxy}
