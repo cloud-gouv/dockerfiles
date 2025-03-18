@@ -1,7 +1,7 @@
 #
 # Base image
 #
-FROM --platform=linux/amd64 debian:bookworm
+FROM --platform=linux/amd64 debian:12-slim
 
 ARG http_proxy=${http_proxy:-}
 ARG https_proxy=${https_proxy:-}
@@ -24,6 +24,7 @@ ARG S3CMD_VERSION
 ARG TERRAFORM_VERSION=${TERRAFORM_VERSION:-1.5.7*}
 #ARG TERRAFORM_VERSION=${TERRAFORM_VERSION:-1.1.0}
 #ARG TERRAFORM_VERSION="0.15.3"
+ARG OPENTOFU_VERSION=${OPENTOFU:-1.9.0*}
 
 # define packages
 ARG DEBIAN_PACKAGES="tzdata keyboard-configuration \
@@ -50,7 +51,7 @@ RUN . /etc/os-release \
 #  Debian 11 (Bullseye) -> Ubuntu 20.04 (Focal) focal
 RUN export UBUNTU_CODENAME=$ANSIBLE_CODENAME \
     ; wget -O- "https://keyserver.ubuntu.com/pks/lookup?fingerprint=on&op=get&search=0x6125E2A8C77F2818FB7BD15B93C4A3FD7BB9C367" \
-    | sudo gpg --dearmour -o /usr/share/keyrings/ansible-archive-keyring.gpg \
+    | sudo gpg --dearmor -o /usr/share/keyrings/ansible-archive-keyring.gpg \
     && echo "deb [signed-by=/usr/share/keyrings/ansible-archive-keyring.gpg] http://ppa.launchpad.net/ansible/ansible/ubuntu $UBUNTU_CODENAME main" \
     | tee /etc/apt/sources.list.d/ansible.list \
     && apt-get -qqy update \
@@ -66,6 +67,21 @@ RUN wget -O - https://apt.releases.hashicorp.com/gpg \
     ; apt-get -qqy update \
     && apt-get install -qy terraform=${TERRAFORM_VERSION} \
     && terraform --version
+
+# install opentofu version
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+RUN install -m 0755 -d /etc/apt/keyrings \
+    ; curl -fsSL https://get.opentofu.org/opentofu.gpg | \
+      tee /etc/apt/keyrings/opentofu.gpg >/dev/null \
+    ; curl -fsSL https://packages.opentofu.org/opentofu/tofu/gpgkey | \
+      gpg --no-tty --batch --dearmor -o /etc/apt/keyrings/opentofu-repo.gpg >/dev/null \
+    ; echo \
+      "deb [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-repo.gpg] https://packages.opentofu.org/opentofu/tofu/any/ any main" | \
+      tee /etc/apt/sources.list.d/opentofu.list > /dev/null \
+    ; chmod a+r /etc/apt/sources.list.d/opentofu.list \
+    ; apt-get -qqy update \
+    && apt-get install -qqy "tofu" \
+    && tofu --version
 
 # install terraform provider
 #COPY provider.tf .
