@@ -24,11 +24,24 @@ initOS() {
   OS=$(uname|tr '[:upper:]' '[:lower:]')
 }
 
+# runs the given command as root (detects if we are root already)
+runAsRoot() {
+  if [ $EUID -ne 0 -a "$USE_SUDO" = "true" ]; then
+    sudo "${@}"
+  else
+    "${@}"
+  fi
+}
+
 # detect OS ARCH
 initArch
 initOS
 
 # default version
+export INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
+export HELM_INSTALL_DIR="${HELM_INSTALL_DIR:-$INSTALL_DIR}"
+export USE_SUDO="${USE_SUDO:-true}"
+
 SKIP_INSTALL="${SKIP_INSTALL:-false}"
 FORCE_INSTALL="${FORCE_INSTALL:-false}"
 
@@ -55,10 +68,13 @@ export ARGOCD_CLI_VERSION=${ARGOCD_CLI_VERSION:-v2.13.1} # Select desired TAG fr
 export ARGOCD_CLI_BINARY=argocd-${OS}-${ARCH}
 export ARGOCD_CLI_URL=https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_CLI_VERSION}/${ARGOCD_CLI_BINARY}
 
+export DK8S_TOOLS_VERSION=${DK8S_TOOLS_VERSION:-main}
+export DK8S_TOOLS_URL=https://raw.githubusercontent.com/numerique-gouv/dk8s/${DK8S_TOOLS_VERSION}/scripts/install-prereq.sh
+
 if [[ "${SKIP_INSTALL}" == "false" ]]; then
   # install some tools (kind, kubectl, helm...)
   echo "Install numerique-gouv/dk8s tools"
-  curl -L https://raw.githubusercontent.com/numerique-gouv/dk8s/main/scripts/install-prereq.sh | bash
+  curl -L ${DK8S_TOOLS_URL} | bash
 
   # default
   clusterctl_is_installed="false"
@@ -78,8 +94,8 @@ if [[ "${SKIP_INSTALL}" == "false" ]]; then
     echo "# Install clusterctl ${CLUSTERCTL_VERSION} from ${CLUSTERCTL_URL}"
     curl -sSLO ${CLUSTERCTL_URL}
     chmod +x ${CLUSTERCTL_BINARY}
-    sudo mv ${CLUSTERCTL_BINARY} /usr/local/bin/${CLUSTERCTL_BINARY}
-    sudo ln -sf /usr/local/bin/${CLUSTERCTL_BINARY} /usr/local/bin/clusterctl
+    runAsRoot mv ${CLUSTERCTL_BINARY} ${INSTALL_DIR}/${CLUSTERCTL_BINARY}
+    runAsRoot ln -sf ${INSTALL_DIR}/${CLUSTERCTL_BINARY} ${INSTALL_DIR}/clusterctl
   fi
 
   if [[ "$yq_is_installed" == "false" ]];then
@@ -88,16 +104,16 @@ if [[ "${SKIP_INSTALL}" == "false" ]]; then
     tar -zxvf ${YQ_BINARY}.tar.gz  ./${YQ_BINARY}
     rm -rf ${YQ_BINARY}.tar.gz
     chmod +x ${YQ_BINARY}
-    sudo mv ${YQ_BINARY} /usr/local/bin/${YQ_BINARY}
-    sudo ln -sf /usr/local/bin/${YQ_BINARY} /usr/local/bin/yq
+    runAsRoot mv ${YQ_BINARY} ${INSTALL_DIR}/${YQ_BINARY}
+    runAsRoot ln -sf ${INSTALL_DIR}/${YQ_BINARY} ${INSTALL_DIR}/yq
   fi
 
   if [[ "$argocd_is_installed" == "false" ]];then
     echo "# Install argocd ${ARGOCD_CLI_VERSION} from ${ARGOCD_CLI_URL}"
     curl -sSLO ${ARGOCD_CLI_URL}
     chmod +x ${ARGOCD_CLI_BINARY}
-    sudo mv ${ARGOCD_CLI_BINARY} /usr/local/bin/${ARGOCD_CLI_BINARY}
-    sudo ln -sf /usr/local/bin/${ARGOCD_CLI_BINARY} /usr/local/bin/argocd
+    runAsRoot mv ${ARGOCD_CLI_BINARY} ${INSTALL_DIR}/${ARGOCD_CLI_BINARY}
+    runAsRoot ln -sf ${INSTALL_DIR}/${ARGOCD_CLI_BINARY} ${INSTALL_DIR}/argocd
   fi
 fi
 
