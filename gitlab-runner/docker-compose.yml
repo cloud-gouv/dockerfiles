@@ -1,0 +1,19 @@
+services:
+  gitlab_runner:
+    platform: linux/amd64
+    image: ${DOCKER_REGISTRY:-ghcr.io/cloud-gouv/}gitlab_runner:${DOCKER_GITLAB_RUNNER_VERSION:-latest}
+    #extra_hosts:
+      #- "host.docker.internal:host-gateway"
+      #- "localhost:host-gateway"
+    build:
+      context: .
+      args:
+        http_proxy: ${http_proxy:-}
+        https_proxy: ${http_proxy:-}
+        no_proxy: ${no_proxy:-}
+    volumes:
+      - .:/data
+    environment:
+      http_proxy: ${http_proxy}
+      https_proxy: ${http_proxy}
+      no_proxy: ${no_proxy}
