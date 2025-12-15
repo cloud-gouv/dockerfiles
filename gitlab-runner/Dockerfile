@@ -9,19 +9,19 @@ ARG no_proxy=${no_proxy:-}
 
 ARG DEBIAN_PACKAGES="tzdata keyboard-configuration \
       sudo net-tools gettext-base lsb-release \
-    	build-essential \
+      build-essential \
       ca-certificates gnupg software-properties-common \
       unzip groff less wget \
-    	rsync \
+      rsync \
       make jq git curl unzip gettext \
       python3 python3-pip \
       pipx \
       mkisofs \
-    	qemu-system-x86 \
-     	qemu-kvm \
+      qemu-system-x86 \
+      qemu-kvm \
       qemu-utils \
       rclone \
-     	xorriso \
+      xorriso \
       "
 
 ARG PIP_PACKAGES="python-openstackclient==7.4.0 \
@@ -58,7 +58,5 @@ RUN export DEBIAN_FRONTEND="noninteractive" \
    && useradd -m -d /home/imagebuilder -g imagebuilder imagebuilder \
    && chown -R imagebuilder:imagebuilder /home/imagebuilder
 
-USER imagebuilder
-WORKDIR /home/imagebuilder
-
-ENTRYPOINT ["/bin/bash", "-l", "-c"]
+# No entrypoint to avoid having to override it https://docs.gitlab.com/ci/docker/using_docker_images/#override-the-entrypoint-of-an-image
+# Gitlab runner expect the use of root user, it will mount the repo as root.
