@@ -1,0 +1,5 @@
+.bash*
+.cache
+.env
+**.env
+tmp
