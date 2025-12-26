@@ -1,0 +1,20 @@
+services:
+  helmfile:
+    platform: linux/amd64
+    image: ${DOCKER_REGISTRY:-ghcr.io/cloud-gouv/}helmfile:${DOCKER_HELMFILE_VERSION:-v1.1.9}
+    #extra_hosts:
+      #- "host.docker.internal:host-gateway"
+      #- "localhost:host-gateway"
+    build:
+      context: .
+      args:
+        DOCKER_HELMFILE_VERSION: ${DOCKER_HELMFILE_VERSION:-v1.1.9}
+        http_proxy: ${http_proxy:-}
+        https_proxy: ${http_proxy:-}
+        no_proxy: ${no_proxy:-}
+    volumes:
+      - .:/data
+    environment:
+      http_proxy: ${http_proxy}
+      https_proxy: ${http_proxy}
+      no_proxy: ${no_proxy}
