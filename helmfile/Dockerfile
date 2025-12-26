@@ -1,4 +1,4 @@
-ARG DOCKER_HELMFILE_VERSION=v0.171.0
+ARG DOCKER_HELMFILE_VERSION=v1.1.9
 
 FROM --platform=linux/amd64 ghcr.io/helmfile/helmfile-debian-stable-slim:${DOCKER_HELMFILE_VERSION}
 
