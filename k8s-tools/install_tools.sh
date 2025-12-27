@@ -46,25 +46,25 @@ SKIP_INSTALL="${SKIP_INSTALL:-false}"
 FORCE_INSTALL="${FORCE_INSTALL:-false}"
 
 # source VERSION
-export KIND_VERSION="${KIND_VERSION:-v0.24.0}"
-export KUBECTL_VERSION="${KUBECTL_VERSION:-v1.29.8}"
+export KIND_VERSION="${KIND_VERSION:-v0.30.0}"
+export KUBECTL_VERSION="${KUBECTL_VERSION:-v1.32.7}"
 #export KUBECTL_VERSION="$(curl -Lfs $KUBECTL_RELEASE_VERSION/stable.txt)"
-export KUBERNETES_VERSION=${KUBERNETES_VERSION:-v1.29.8}
-export HELM_VERSION="${HELM_VERSION:-v3.16.1}"
-export HELMFILE_VERSION="${HELMFILE_VERSION:-0.168.0}"
+export KUBERNETES_VERSION=${KUBERNETES_VERSION:-v1.32.7}
+export HELM_VERSION="${HELM_VERSION:-v3.19.0}"
+export HELMFILE_VERSION="${HELMFILE_VERSION:-1.1.9}"
 export MKCERT_VERSION="${MKCERT_VERSION:-v1.4.4}"
-export AGE_VERSION="${AGE_VERSION:-v1.2.0}"
-export SOPS_VERSION="${SOPS_VERSION:-v3.8.1}"
+export AGE_VERSION="${AGE_VERSION:-v1.2.1}"
+export SOPS_VERSION="${SOPS_VERSION:-v3.10.2}"
 
 export CLUSTERCTL_VERSION=${CLUSTERCTL_VERSION:-v1.8.4}
 export CLUSTERCTL_BINARY=clusterctl-${OS}-${ARCH}
 export CLUSTERCTL_URL=https://github.com/kubernetes-sigs/cluster-api/releases/download/${CLUSTERCTL_VERSION}/${CLUSTERCTL_BINARY}
 
-export YQ_VERSION=${YQ_VERSION:-v4.44.3}
+export YQ_VERSION=${YQ_VERSION:-v4.49.2}
 export YQ_BINARY=yq_${OS}_${ARCH}
 export YQ_URL=https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/${YQ_BINARY}.tar.gz
 
-export ARGOCD_CLI_VERSION=${ARGOCD_CLI_VERSION:-v2.13.1} # Select desired TAG from https://github.com/argoproj/argo-cd/releases
+export ARGOCD_CLI_VERSION=${ARGOCD_CLI_VERSION:-v2.14.21} # Select desired TAG from https://github.com/argoproj/argo-cd/releases
 export ARGOCD_CLI_BINARY=argocd-${OS}-${ARCH}
 export ARGOCD_CLI_URL=https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_CLI_VERSION}/${ARGOCD_CLI_BINARY}
 
