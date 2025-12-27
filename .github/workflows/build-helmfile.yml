@@ -18,23 +18,37 @@ env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner}}/helmfile
 
 jobs:
-  build:
-    name: Build and publish docker images
+  prepare:
     runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.versions.outputs.versions }}
+      short_sha: ${{ steps.sha.outputs.short_sha }}
+
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+
+      - name: Load versions
+        id: versions
+        run: |
+          echo "versions=$(jq -R -s -c 'split("\n")[:-1]' helmfile/versions.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Compute short SHA
+        id: sha
+        run: |
+          echo "short_sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        helmfile_version: ${{ fromJson(needs.prepare.outputs.versions) }}
     permissions:
       contents: read
       packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-
-      - name: Calculate docker image tag
-        id: set-tag
-        run: |
-          git fetch -t
-          tag=$( git describe --tags --always)
-          echo "$tag"
-          echo "tag=$tag" >> $GITHUB_OUTPUT
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef
@@ -43,20 +57,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051
-        with:
-          images: ${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-
       - name: Build and push
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
         with:
           context: helmfile
-          tags: "${{ env.IMAGE_NAME }}:${{ steps.set-tag.outputs.tag }}, ${{ env.IMAGE_NAME }}:latest"
-          labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64
           push: true
+          build-args: |
+            DOCKER_HELMFILE_VERSION=${{ matrix.helmfile_version }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ matrix.helmfile_version }}-${{ needs.prepare.outputs.short_sha }}
