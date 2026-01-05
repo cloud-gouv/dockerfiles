@@ -12,6 +12,8 @@ on:
   # weekly
   #  - cron: '0 0 * * 0'
 
+permissions: {}
+
 env:
   REGISTRY: ghcr.io
   REGISTRY_BASE_PATH: ghcr.io/${{ github.repository }}
@@ -20,12 +22,17 @@ env:
 jobs:
   prepare:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
     outputs:
       versions: ${{ steps.versions.outputs.versions }}
       short_sha: ${{ steps.sha.outputs.short_sha }}
 
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with:
+          persist-credentials: false
 
       - name: Load versions
         id: versions
@@ -46,9 +53,12 @@ jobs:
     permissions:
       contents: read
       packages: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with:
+          persist-credentials: false
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef
