@@ -64,6 +64,9 @@ export YQ_VERSION=${YQ_VERSION:-v4.49.2}
 export YQ_BINARY=yq_${OS}_${ARCH}
 export YQ_URL=https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/${YQ_BINARY}.tar.gz
 
+export KUSTOMIZE_VERSION=${KUSTOMIZE_VERSION:-v5.8.0}
+export KUSTOMIZE_URL=https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_${OS}_${ARCH}.tar.gz
+
 export ARGOCD_CLI_VERSION=${ARGOCD_CLI_VERSION:-v2.14.21} # Select desired TAG from https://github.com/argoproj/argo-cd/releases
 export ARGOCD_CLI_BINARY=argocd-${OS}-${ARCH}
 export ARGOCD_CLI_URL=https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_CLI_VERSION}/${ARGOCD_CLI_BINARY}
@@ -80,12 +83,14 @@ if [[ "${SKIP_INSTALL}" == "false" ]]; then
   clusterctl_is_installed="false"
   yq_is_installed="false"
   argocd_is_installed="false"
+  kustomize_is_installed="false"
 
   if [[ "${FORCE_INSTALL}" == "false" ]]; then
     # check if exist
     type clusterctl && clusterctl_is_installed="true"
     type yq && yq_is_installed="true"
     type argocd && argocd_is_installed="true"
+    type kustomize && kustomize_is_installed="true"
   else
     echo "# force install ${FORCE_INSTALL}"
   fi
@@ -115,6 +120,11 @@ if [[ "${SKIP_INSTALL}" == "false" ]]; then
     runAsRoot mv ${ARGOCD_CLI_BINARY} ${INSTALL_DIR}/${ARGOCD_CLI_BINARY}
     runAsRoot ln -sf ${INSTALL_DIR}/${ARGOCD_CLI_BINARY} ${INSTALL_DIR}/argocd
   fi
+
+  if [[ "$kustomize_is_installed" == "false" ]];then
+    echo "# Install kustomize ${KUSTOMIZE_VERSION} from ${KUSTOMIZE_URL}"
+    curl -Ls ${KUSTOMIZE_URL} | tar zxvf - kustomize
+    chmod +x kustomize
+    runAsRoot mv kustomize ${INSTALL_DIR}/kustomize
+  fi
 fi
-
-
