@@ -22,6 +22,7 @@ ARG DEBIAN_PACKAGES="tzdata keyboard-configuration \
       qemu-utils \
       rclone \
       xorriso \
+      golang-go \
       "
 
 ARG PIP_PACKAGES="python-openstackclient==7.4.0 \
