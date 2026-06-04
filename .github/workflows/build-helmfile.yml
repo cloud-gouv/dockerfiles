@@ -68,7 +68,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
+        uses: docker/build-push-action@1d0c110a5d679453d30b396aa86f6bb6ae377b76
         with:
           context: helmfile
           platforms: linux/amd64
