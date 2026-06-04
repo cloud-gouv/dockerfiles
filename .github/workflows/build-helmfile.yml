@@ -61,7 +61,7 @@ jobs:
           persist-credentials: false
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef
+        uses: docker/login-action@3999a1f4362c53e6a6048cde50f69868af81da5c
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
