@@ -23,6 +23,7 @@ ARG DEBIAN_PACKAGES="tzdata keyboard-configuration \
       rclone \
       xorriso \
       golang-go \
+      debsecan \
       "
 
 ARG PIP_PACKAGES="python-openstackclient==7.4.0 \
