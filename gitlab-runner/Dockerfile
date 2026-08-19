@@ -27,7 +27,7 @@ ARG DEBIAN_PACKAGES="tzdata keyboard-configuration \
       "
 
 ARG PIP_PACKAGES="python-openstackclient==7.4.0 \
-                  ansible-core==2.15.13 ansible \
+                  ansible-core==2.21.3 ansible \
                   ansible-lint \
                   "
 
