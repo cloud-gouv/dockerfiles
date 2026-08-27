@@ -1,4 +1,4 @@
-FROM debian:13-slim
+FROM alpine:3.24
 
 COPY install_tools.sh /build/install_tools.sh
 RUN /build/install_tools.sh
