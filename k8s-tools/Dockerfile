@@ -1,7 +1,7 @@
 #
 # Base image
 #
-FROM --platform=linux/amd64 debian:bullseye
+FROM --platform=linux/amd64 debian:bullseye@sha256:6f519a81440354a85eb592c5f32109ab80605f6b892455983a6f618bf87fabe9
 
 ARG http_proxy=${http_proxy:-}
 ARG https_proxy=${https_proxy:-}
