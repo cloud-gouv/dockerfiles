@@ -45,6 +45,26 @@ jobs:
           tag=$(git describe --tags --always)
           echo "tag=$tag" >> $GITHUB_OUTPUT
           )
+      - uses: oras-project/setup-oras@v1
+      - run: oras version
+
+      - name: Build OCI artifact for provider components
+        run: |
+          ( cd capi-outscale
+            bash -c "make release"
+            find out -type f
+          ) || exit 1
+          ( cd capi-outscale/out
+            echo "build oci artifact"
+            oras push --oci-layout cluster-api-outscale-components:${RELEASE_TAG} metadata.yaml infrastructure-components.yaml cluster-template.yaml
+            find cluster-api-outscale-components -type f
+          ) || exit 1
+        env:
+          VERSION: ${{ steps.set-tag.outputs.tag }}
+          TAG: ${{ steps.set-tag.outputs.tag }}
+          RELEASE_TAG: ${{ steps.set-tag.outputs.tag }}
+          REGISTRY: ${{ env.REGISTRY_BASE_PATH }}
+
       - name: Docker build
         run: |
           ( cd capi-outscale
@@ -69,4 +89,14 @@ jobs:
         env:
           VERSION: ${{ steps.set-tag.outputs.tag }}
           TAG: ${{ steps.set-tag.outputs.tag }}
+          REGISTRY: ${{ env.REGISTRY_BASE_PATH }}
+      - name: OCI artifact push
+        run: |
+          ( cd capi-outscale/out
+            oras cp --from-oci-layout cluster-api-outscale-components:${RELEASE_TAG} ${REGISTRY}/cluster-api-outscale-components:${RELEASE_TAG}
+          )
+        env:
+          VERSION: ${{ steps.set-tag.outputs.tag }}
+          TAG: ${{ steps.set-tag.outputs.tag }}
+          RELEASE_TAG: ${{ steps.set-tag.outputs.tag }}
           REGISTRY: ${{ env.REGISTRY_BASE_PATH }}
