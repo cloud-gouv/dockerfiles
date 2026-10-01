@@ -14,7 +14,10 @@ log = logging.getLogger(__name__)
 TARGET_STATE = {"stop": "stopped", "start": "running"}
 API_ACTION = {"stop": "StopVms", "start": "StartVms"}
 POLL_INTERVAL_SECONDS = 15
-POLL_TIMEOUT_SECONDS = 300
+POLL_TIMEOUT_SECONDS = int(os.environ.get("POLL_TIMEOUT_SECONDS", "600"))
+# (connexion, lecture) par requête HTTP. Le SDK Outscale n'en pose aucun : sans ça, un
+# appel sans réponse bloque le pod jusqu'à activeDeadlineSeconds.
+HTTP_TIMEOUT_SECONDS = (10, 60)
 MACHINE_GROUP = "cluster.x-k8s.io"
 MACHINE_PLURAL = "machines"
 CLUSTER_NAME_LABEL = "cluster.x-k8s.io/cluster-name"
@@ -60,12 +63,29 @@ def describe(vm_id, machine_names):
     return "{}/{}".format(vm_id, machine_names.get(vm_id, "unknown-machine"))
 
 
+def new_gateway():
+    """Gateway dont chaque requête HTTP a un timeout, le SDK n'en exposant pas."""
+    gw = Gateway()
+    session_request = gw.call.session.request
+
+    def request_with_timeout(method, url, **kwargs):
+        kwargs.setdefault("timeout", HTTP_TIMEOUT_SECONDS)
+        return session_request(method, url, **kwargs)
+
+    gw.call.session.request = request_with_timeout
+    return gw
+
+
 def wait_for_state(gw, vm_ids, target_state, machine_names):
     deadline = time.time() + POLL_TIMEOUT_SECONDS
     pending = set(vm_ids)
     while pending and time.time() < deadline:
         time.sleep(POLL_INTERVAL_SECONDS)
-        result = gw.ReadVms(Filters={"VmIds": list(pending)})
+        try:
+            result = gw.ReadVms(Filters={"VmIds": list(pending)})
+        except RequestException as exc:
+            log.warning("ReadVms failed, retrying at next poll: %s", exc)
+            continue
         for vm in result.get("Vms", []):
             if vm["State"] == target_state:
                 log.info("%s reached state %s", describe(vm["VmId"], machine_names), target_state)
@@ -139,7 +159,7 @@ def main():
     target_state = TARGET_STATE[args.action]
     log.info("action=%s dry_run=%s vms=%s", args.action, args.dry_run, [describe(v, machine_names) for v in vm_ids])
 
-    gw = Gateway()
+    gw = new_gateway()
     current_states = get_current_states(gw, vm_ids)
     to_process = [vm_id for vm_id in vm_ids if current_states.get(vm_id) != target_state]
     for vm_id in vm_ids:
