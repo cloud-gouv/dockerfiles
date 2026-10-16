@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'outscale-cli/**'
-      - '.github/workflows/**'
+      - '.github/workflows/build-outscale-cli.yml'
   workflow_dispatch:
   schedule:
   # every day

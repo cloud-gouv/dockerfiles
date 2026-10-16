@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'k8s-tools/**'
-      - '.github/workflows/**'
+      - '.github/workflows/build-k8s-tools.yml'
   workflow_dispatch:
   schedule:
   # every day

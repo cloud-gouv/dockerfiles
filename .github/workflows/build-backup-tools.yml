@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'backup-tools/**'
-      - '.github/workflows/**'
+      - '.github/workflows/build-backup-tools.yml'
   workflow_dispatch:
   schedule:
   # every day

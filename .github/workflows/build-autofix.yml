@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'autofix/**'
-      - '.github/workflows/**'
+      - '.github/workflows/build-autofix.yml'
   workflow_dispatch:
   schedule:
   # every day

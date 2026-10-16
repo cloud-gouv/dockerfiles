@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'helmfile/**'
-      - '.github/workflows/**'
+      - '.github/workflows/build-helmfile.yml'
   workflow_dispatch:
   #schedule:
   # every day

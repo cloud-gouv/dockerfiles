@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'tofu-deployment/**'
-      - '.github/workflows/**'
+      - '.github/workflows/build-tofu-deployment.yml'
   workflow_dispatch:
   schedule:
   # every day

@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'outscale-vm-power/**'
-      - '.github/workflows/**'
+      - '.github/workflows/build-outscale-vm-power.yml'
   workflow_dispatch:
   schedule:
   # every day
