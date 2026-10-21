@@ -4,14 +4,13 @@ on:
   push:
     branches:
       - main
+    tags:
+      - "*"
     paths:
       - 'tofu-deployment/**'
       - '.github/workflows/build-tofu-deployment.yml'
   workflow_dispatch:
   schedule:
-  # every day
-  #  - cron: '0 1 * * *'
-  # weekly
     - cron: '0 0 * * 0'
 
 env:
