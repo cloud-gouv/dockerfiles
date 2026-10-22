@@ -23,6 +23,18 @@ EXCLUDED_CLUSTER_SUBSTRINGS = [
 ]
 
 
+def job_is_stale():
+    suffix = os.environ.get("JOB_NAME", "").rsplit("-", 1)[-1]
+    max_delay = int(os.environ.get("MAX_JOB_DELAY_SECONDS", "0"))
+    if not suffix.isdigit() or max_delay <= 0:
+        return False
+    delay = time.time() - int(suffix) * 60
+    if delay > max_delay:
+        log.warning("job planned %ds ago (max %ds), likely replayed after a reboot: nothing to do", delay, max_delay)
+        return True
+    return False
+
+
 def env_flag(name):
     return os.environ.get(name, "").strip().lower() in {"1", "true", "yes"}
 
@@ -131,6 +143,9 @@ def main():
         help="n'appelle aucune API de modification, journalise seulement ce qui serait fait",
     )
     args = parser.parse_args()
+
+    if job_is_stale():
+        return
 
     machine_names = get_worker_machines()
     if not machine_names:
