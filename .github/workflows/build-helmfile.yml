@@ -21,7 +21,7 @@ env:
 
 jobs:
   prepare:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     permissions:
       contents: read
 
@@ -46,7 +46,7 @@ jobs:
 
   build:
     needs: prepare
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         helmfile_version: ${{ fromJson(needs.prepare.outputs.versions) }}
