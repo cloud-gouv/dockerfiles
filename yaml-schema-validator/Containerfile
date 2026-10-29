@@ -1,0 +1,8 @@
+FROM docker.io/rust:1.99-slim-trixie@sha256:b8e062b1c3a80183df83d9ba187cadd2b5ab84bc78d453dbfeb2fccd5f982247 AS ys-builder
+
+RUN cargo install --git https://github.com/yaml-schema/yaml-schema/ --rev 1c9403a7e4eaf2e5de2ea39594279ce73df258fc # v0.9.3
+
+FROM docker.io/debian:trixie-20261027-slim@sha256:f6b08b09a05725f9431502d3b5714f5c4576e82c1a84fa1debe0c24a7e0c3ec4
+
+COPY --from=ys-builder /usr/local/cargo/bin/ys /usr/local/bin/ys
+
