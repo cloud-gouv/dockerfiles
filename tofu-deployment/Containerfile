@@ -1,4 +1,4 @@
-FROM docker.io/anchore/syft:v1.55.0-nonroot@sha256:ec5bdbc745485920c6f444239f0c09ed87b3c4c165ff9433f95bc66b3500fbf9 AS syft
+FROM docker.io/anchore/syft:v1.57.1-nonroot@sha256:70f464b4e8aad1ace420102a3329041ce45465ebb7465fc1a98056170573da3b AS syft
 
 FROM ghcr.io/opentofu/opentofu:v1.11-minimal@sha256:11d0bbe4d7c6cf7ce5f3b516908db4eaa0f3561dd5b444cab444c72471e541a5 AS tofu
 
