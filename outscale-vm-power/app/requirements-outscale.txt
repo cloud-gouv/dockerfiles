@@ -1,2 +1,2 @@
-osc-sdk-python==0.42.0
+osc-sdk-python==0.43.0
 kubernetes==36.0.3
