@@ -1,7 +1,7 @@
 #
 # Base image
 #
-FROM --platform=linux/amd64 debian:12-slim
+FROM --platform=linux/amd64 debian:12-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc
 
 ARG http_proxy=${http_proxy:-}
 ARG https_proxy=${https_proxy:-}
