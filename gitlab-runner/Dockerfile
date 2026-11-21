@@ -1,7 +1,7 @@
 #
 # Base image
 #
-FROM --platform=linux/amd64 ubuntu:24.04
+FROM --platform=linux/amd64 ubuntu:24.04@sha256:9c7f200c07e3d4a03e7249d2c16bf66a51120fb876aa2242cf31451412543289
 
 ARG http_proxy=${http_proxy:-}
 ARG https_proxy=${https_proxy:-}
