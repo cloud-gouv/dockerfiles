@@ -1,4 +1,4 @@
-ARG DOCKER_HELMFILE_VERSION=v1.1.9
+ARG DOCKER_HELMFILE_VERSION=v1.8.5@sha256:a21f66de340a4b38a8576435a0fc2227aaa25ea975c756a45176403144957abb
 
 FROM --platform=linux/amd64 ghcr.io/helmfile/helmfile-debian-stable-slim:${DOCKER_HELMFILE_VERSION}
 
