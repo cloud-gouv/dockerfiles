@@ -16,9 +16,3 @@ def env_int(name, default):
     value = env_str(name)
     return int(value) if value else default
 
-
-def env_list(name, default):
-    """Liste séparée par des virgules. Variable définie mais vide = liste vide."""
-    raw = os.environ.get(name)
-    raw = default if raw is None else raw
-    return [item.strip() for item in raw.split(",") if item.strip()]

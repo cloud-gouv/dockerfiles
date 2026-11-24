@@ -26,17 +26,19 @@ def cluster_name_of(obj):
 
 
 class CapiClient:
-    """CustomObjectsApi in-cluster, restreint aux clusters dans le périmètre.
+    """CustomObjectsApi in-cluster, restreint aux objets d'un seul cluster workload.
 
     Les patchs partent en `application/merge-patch+json` (défaut du client sur les custom
     objects) : les champs absents du corps sont laissés intacts, et une annotation à null
     est supprimée.
     """
 
-    def __init__(self, excluded_cluster_substrings, api_version=""):
+    def __init__(self, cluster_name, api_version=""):
+        if not cluster_name:
+            raise CapiError("CLUSTER_NAME vide : refus d'agir sur tous les clusters du mgmt")
         config.load_incluster_config()
         self.api = client.CustomObjectsApi()
-        self.excluded_cluster_substrings = excluded_cluster_substrings
+        self.cluster_name = cluster_name
         self.version = api_version or self._detect_version()
 
     def _detect_version(self):
@@ -48,20 +50,10 @@ class CapiClient:
                 return version
         raise CapiError("groupe d'API {} absent du cluster : Cluster API n'est pas installé ici".format(GROUP))
 
-    def in_scope(self, cluster_name):
-        return not any(s in cluster_name for s in self.excluded_cluster_substrings)
-
     def list_in_scope(self, plural):
-        """Objets `plural` de tous les namespaces, hors clusters exclus."""
+        """Objets `plural` du cluster ciblé, tous namespaces confondus."""
         items = self.api.list_cluster_custom_object(GROUP, self.version, plural)["items"]
-        kept = []
-        for obj in items:
-            cluster_name = cluster_name_of(obj)
-            if not self.in_scope(cluster_name):
-                log.info("hors périmètre, ignoré: %s %s (cluster=%s)", plural, describe(obj), cluster_name or "inconnu")
-                continue
-            kept.append(obj)
-        return kept
+        return [obj for obj in items if cluster_name_of(obj) == self.cluster_name]
 
     def list_namespaced(self, namespace, plural, label_selector):
         return self.api.list_namespaced_custom_object(

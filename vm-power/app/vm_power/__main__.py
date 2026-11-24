@@ -7,7 +7,7 @@ import sys
 from .capi import CapiClient, CapiError
 from .providers import PROVIDERS
 from .providers.base import ACTIONS
-from .settings import env_flag, env_int, env_list, env_str
+from .settings import env_flag, env_int, env_str
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 log = logging.getLogger("vm_power")
@@ -40,7 +40,7 @@ def main():
 
     try:
         capi = CapiClient(
-            excluded_cluster_substrings=env_list("EXCLUDED_CLUSTER_SUBSTRINGS", "mgmt"),
+            cluster_name=env_str("CLUSTER_NAME"),
             api_version=env_str("CAPI_API_VERSION"),
         )
         provider = PROVIDERS[args.provider].from_env(

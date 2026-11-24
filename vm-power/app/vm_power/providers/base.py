@@ -84,12 +84,13 @@ class PowerProvider(ABC):
         """Retourne True si tout a convergé (ou s'il n'y avait rien à faire)."""
         targets = self.list_targets()
         if not targets:
-            log.info("aucune cible dans le périmètre (exclus=%s), rien à faire", self.capi.excluded_cluster_substrings)
+            log.info("aucune cible pour le cluster %s, rien à faire", self.capi.cluster_name)
             return True
 
         log.info(
-            "provider=%s action=%s dry_run=%s cibles=%s",
+            "provider=%s cluster=%s action=%s dry_run=%s cibles=%s",
             self.name,
+            self.capi.cluster_name,
             action,
             self.dry_run,
             [t.name for t in targets],

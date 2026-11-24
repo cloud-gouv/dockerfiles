@@ -1,8 +1,8 @@
 # vm-power
 
-Arrête le soir et redémarre le matin les workers des clusters Cluster API, depuis le
+Arrête le soir et redémarre le matin les workers d'un cluster Cluster API, depuis son
 cluster de management. Image unique, un provider par cloud. Déployée par la chart
-`common-helm-charts/osc-vm-power`.
+`common-helm-charts/vm-power`, une release par cluster workload.
 
 | provider   | ce que fait `stop`                                   | ce que fait `start`                                  |
 |------------|------------------------------------------------------|------------------------------------------------------|
@@ -22,7 +22,7 @@ python -m vm_power stop --provider nubo --dry-run
 | `PROVIDER`                    | —                | `outscale` ou `nubo` (ou `--provider`)                      |
 | `DRY_RUN`                     | `false`          | fait valider les appels par l'API sans rien modifier        |
 | `NO_WAIT`                     | `false`          | sort sans attendre la convergence                           |
-| `EXCLUDED_CLUSTER_SUBSTRINGS` | `mgmt`           | clusters ignorés (sous-chaînes, séparées par des virgules)  |
+| `CLUSTER_NAME`                | — (obligatoire)  | cluster workload ciblé (label `cluster.x-k8s.io/cluster-name`) |
 | `CAPI_API_VERSION`            | détectée         | forcer `v1beta1` / `v1beta2`                                |
 | `POLL_INTERVAL_SECONDS`       | `15`             |                                                             |
 | `POLL_TIMEOUT_SECONDS`        | selon provider   | 300 (outscale), 900 (nubo)                                  |
