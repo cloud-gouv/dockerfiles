@@ -1,10 +1,10 @@
-name: Docker build and publish outscale-vm-power
+name: Docker build and publish vm-power
 
 on:
   push:
     paths:
-      - 'outscale-vm-power/**'
-      - '.github/workflows/build-outscale-vm-power.yml'
+      - 'vm-power/**'
+      - '.github/workflows/build-vm-power.yml'
   workflow_dispatch:
   schedule:
   # every day
@@ -15,7 +15,7 @@ on:
 env:
   REGISTRY: ghcr.io
   REGISTRY_BASE_PATH: ghcr.io/${{ github.repository }}
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner}}/outscale-vm-power
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner}}/vm-power
 
 jobs:
   build:
@@ -55,8 +55,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
         with:
-          context: outscale-vm-power
-          file: outscale-vm-power/Dockerfile.outscale
+          context: vm-power
           tags: "${{ env.IMAGE_NAME }}:${{ steps.set-tag.outputs.tag }}, ${{ env.IMAGE_NAME }}:latest"
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64
