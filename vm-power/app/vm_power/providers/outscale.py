@@ -16,6 +16,10 @@ log = logging.getLogger(__name__)
 
 TARGET_STATE = {"stop": "stopped", "start": "running"}
 API_ACTION = {"stop": "StopVms", "start": "StartVms"}
+# Seul état depuis lequel l'API accepte l'action.
+ACTIONABLE_STATE = {"stop": "running", "start": "stopped"}
+# Action déjà en cours : rien à demander.
+IN_PROGRESS_STATE = {"stop": "stopping", "start": "pending"}
 
 
 class OutscaleProvider(PowerProvider):
@@ -47,6 +51,14 @@ class OutscaleProvider(PowerProvider):
             state = states.get(target.ref)
             if state == desired:
                 log.info("%s déjà %s, ignorée", target.name, desired)
+                continue
+            if state == IN_PROGRESS_STATE[action]:
+                log.info("%s déjà en %s, ignorée", target.name, state)
+                continue
+            if state != ACTIONABLE_STATE[action]:
+                # StartVms/StopVms part en un seul appel : une seule VM dans un état
+                # incompatible (terminated, shutting-down...) fait refuser tout le lot en 409.
+                log.warning("%s en état %s, impossible de la passer à %s : ignorée", target.name, state, desired)
                 continue
             log.info("%s: %s -> %s", target.name, state, desired)
             changes.append(Change(target, desired))
